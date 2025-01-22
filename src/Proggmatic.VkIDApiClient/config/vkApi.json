@@ -1,0 +1,6 @@
+{
+  "vkApi": {
+    /* ID of VK application. Set from here https://id.vk.com/about/business/go/accounts/{my user id}/apps */
+    "applicationId": 12345678
+  }
+}
