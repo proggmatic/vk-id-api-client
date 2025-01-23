@@ -1,6 +1,9 @@
 {
   "vkApi": {
     /* ID of VK application. Set from here https://id.vk.com/about/business/go/accounts/{my user id}/apps */
-    "applicationId": 12345678
+    "applicationId": 12345678,
+
+    /* Valid redirect URL. You can set it up on https://id.vk.com/about/business/go/accounts/{your user ID}/apps/{your app ID}/edit */
+    "redirectUrl": "https://your-valid-redirect-url"
   }
 }

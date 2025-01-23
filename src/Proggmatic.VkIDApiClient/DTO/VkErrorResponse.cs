@@ -3,7 +3,7 @@
 
 namespace Proggmatic.VkIDApiClient.DTO;
 
-public class ErrorResponse
+public class VkErrorResponse
 {
     /// <summary>
     /// Ошибка с одним из значений

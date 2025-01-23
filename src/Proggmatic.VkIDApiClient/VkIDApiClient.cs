@@ -11,24 +11,21 @@ namespace Proggmatic.VkIDApiClient;
 
 public class VkIDApiClient : IDisposable
 {
-    private readonly IHttpClientFactory? _httpClientFactory;
-    private readonly HttpClient? _httpClient;
+    private readonly HttpClient _httpClient;
     private readonly IOptionsSnapshot<VkIDApiClientConfig> _options;
+    private static readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
 
-
+    /// <summary>
+    /// Constructor for dependency injection
+    /// </summary>
+    /// <param name="httpClient"></param>
+    /// <param name="options"></param>
     [ActivatorUtilitiesConstructor]
     public VkIDApiClient(HttpClient httpClient, IOptionsSnapshot<VkIDApiClientConfig> options)
     {
         _httpClient = httpClient;
         _options = options;
     }
-
-    //[ActivatorUtilitiesConstructor]
-    public VkIDApiClient(IHttpClientFactory httpClientFactory, IOptionsSnapshot<VkIDApiClientConfig> options)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
-
 
     public VkIDApiClient(HttpClient httpClient, VkIDApiClientConfig config)
     {
@@ -41,22 +38,21 @@ public class VkIDApiClient : IDisposable
     /// Exchange authentication code to access tokens
     /// </summary>
     /// <exception cref="HttpRequestException">If status code is not success</exception>
-    /// <exception cref="VkIDApiException"></exception>
-    public async Task<ExchangeCodeResponse> ExchangeCode(string code, string deviceId, string codeVerifier, string state, CancellationToken cancellationToken = default)
+    /// <exception cref="VkIDApiException">In case of error response</exception>
+    public async Task<VkExchangeCodeResponse> ExchangeCode(string code, string deviceId, string codeVerifier, string state, CancellationToken cancellationToken = default)
     {
         var parameters = new Dictionary<string, string>
         {
             { "grant_type", "authorization_code" },
             { "code_verifier", codeVerifier },
-            // { "redirect_uri", redirectUri },
+            { "redirect_uri", _options.Value.RedirectUrl },
             { "code", code },
             { "client_id", _options.Value.ApplicationId.ToString() },
             { "device_id", deviceId },
             { "state", state }
         };
 
-        using var httpClient = GetHttpClient();
-        var response = await httpClient.PostAsync(
+        var response = await _httpClient.PostAsync(
             "https://id.vk.com/oauth2/auth",
             new FormUrlEncodedContent(parameters),
             cancellationToken
@@ -64,13 +60,20 @@ public class VkIDApiClient : IDisposable
 
         if (!response.IsSuccessStatusCode)
         {
-            var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>((JsonSerializerOptions?)null, cancellationToken);
-            throw new VkIDApiException(errorResponse?.Error ?? "Exchange code error response could not be parsed.", errorResponse?.ErrorDescription);
+            var errorResponse = await response.Content.ReadFromJsonAsync<VkErrorResponse>((JsonSerializerOptions?)null, cancellationToken).ConfigureAwait(false);
+            throw new VkIDApiException(errorResponse?.Error ?? "Exchange code error response could not be parsed.", errorResponse?.ErrorDescription, (int)response.StatusCode);
         }
 
-        var result = await response.Content.ReadFromJsonAsync<ExchangeCodeResponse>((JsonSerializerOptions?)null, cancellationToken);
+        var stringResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        if (stringResponse.Contains("\"error\":"))
+        {
+            var errorResponse = JsonSerializer.Deserialize<VkErrorResponse>(stringResponse, _serializerOptions);
+            throw new VkIDApiException(errorResponse?.Error ?? "Exchange code error response could not be parsed.", errorResponse?.ErrorDescription, (int)response.StatusCode);
+        }
+
+        var result = JsonSerializer.Deserialize<VkExchangeCodeResponse>(stringResponse, _serializerOptions);
         if (result == null)
-            throw new VkIDApiException("Exchange code response could not be parsed.");
+            throw new VkIDApiException("Exchange code response could not be parsed.", responseCode: (int)response.StatusCode);
 
         return result;
     }
@@ -79,8 +82,8 @@ public class VkIDApiClient : IDisposable
     /// Exchange authentication code to access tokens
     /// </summary>
     /// <exception cref="HttpRequestException">If status code is not success</exception>
-    /// <exception cref="VkIDApiException"></exception>
-    public async Task<UserInfoResponse> GetUserInfo(string accessToken, CancellationToken cancellationToken = default)
+    /// <exception cref="VkIDApiException">In case of error response</exception>
+    public async Task<VkUserInfoResponse> GetUserInfo(string accessToken, CancellationToken cancellationToken = default)
     {
         var parameters = new Dictionary<string, string>
         {
@@ -88,8 +91,7 @@ public class VkIDApiClient : IDisposable
             { "client_id", _options.Value.ApplicationId.ToString() }
         };
 
-        using var httpClient = GetHttpClient();
-        var response = await httpClient.PostAsync(
+        var response = await _httpClient.PostAsync(
             "https://id.vk.com/oauth2/user_info",
             new FormUrlEncodedContent(parameters),
             cancellationToken
@@ -97,13 +99,20 @@ public class VkIDApiClient : IDisposable
 
         if (!response.IsSuccessStatusCode)
         {
-            var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>((JsonSerializerOptions?)null, cancellationToken);
-            throw new VkIDApiException(errorResponse?.Error ?? "User info error response could not be parsed.", errorResponse?.ErrorDescription);
+            var errorResponse = await response.Content.ReadFromJsonAsync<VkErrorResponse>((JsonSerializerOptions?)null, cancellationToken).ConfigureAwait(false);
+            throw new VkIDApiException(errorResponse?.Error ?? "User info error response could not be parsed.", errorResponse?.ErrorDescription, (int)response.StatusCode);
         }
 
-        var result = await response.Content.ReadFromJsonAsync<UserResponseWrapper<UserInfoResponse>>((JsonSerializerOptions?)null, cancellationToken);
+        var stringResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        if (stringResponse.Contains("\"error\":"))
+        {
+            var errorResponse = JsonSerializer.Deserialize<VkErrorResponse>(stringResponse, _serializerOptions);
+            throw new VkIDApiException(errorResponse?.Error ?? "User info error response could not be parsed.", errorResponse?.ErrorDescription, (int)response.StatusCode);
+        }
+
+        var result = JsonSerializer.Deserialize<VkUserResponseWrapper<VkUserInfoResponse>>(stringResponse, _serializerOptions);
         if (result == null)
-            throw new VkIDApiException("User info response could not be parsed.");
+            throw new VkIDApiException("User info response could not be parsed.", responseCode: (int)response.StatusCode);
 
         return result.User;
     }
@@ -113,7 +122,9 @@ public class VkIDApiClient : IDisposable
     /// </summary>
     /// <param name="idToken">JSON Web Token (JWT) пользователя, который был получен после первичной авторизации вместе с Access и Refresh token</param>
     /// <param name="cancellationToken">Токен отмены запроса</param>
-    public async Task<UserInfoResponse> GetPublicInfo(string idToken, CancellationToken cancellationToken = default)
+    /// <exception cref="HttpRequestException">If status code is not success</exception>
+    /// <exception cref="VkIDApiException">In case of error response</exception>
+    public async Task<VkUserInfoResponse> GetPublicInfo(string idToken, CancellationToken cancellationToken = default)
     {
         var parameters = new Dictionary<string, string>
         {
@@ -121,8 +132,7 @@ public class VkIDApiClient : IDisposable
             { "client_id", _options.Value.ApplicationId.ToString() }
         };
 
-        using var httpClient = GetHttpClient();
-        var response = await httpClient.PostAsync(
+        var response = await _httpClient.PostAsync(
             "https://id.vk.com/oauth2/public_info",
             new FormUrlEncodedContent(parameters),
             cancellationToken
@@ -130,23 +140,30 @@ public class VkIDApiClient : IDisposable
 
         if (!response.IsSuccessStatusCode)
         {
-            var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>((JsonSerializerOptions?)null, cancellationToken);
-            throw new VkIDApiException(errorResponse?.Error ?? "Public user info error response could not be parsed.", errorResponse?.ErrorDescription);
+            var errorResponse = await response.Content.ReadFromJsonAsync<VkErrorResponse>((JsonSerializerOptions?)null, cancellationToken).ConfigureAwait(false);
+            throw new VkIDApiException(errorResponse?.Error ?? "Public user info error response could not be parsed.", errorResponse?.ErrorDescription, (int)response.StatusCode);
         }
 
-        var result = await response.Content.ReadFromJsonAsync<UserResponseWrapper<UserInfoResponse>>((JsonSerializerOptions?)null, cancellationToken);
+        var stringResponse = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        if (stringResponse.Contains("\"error\":"))
+        {
+            var errorResponse = JsonSerializer.Deserialize<VkErrorResponse>(stringResponse, _serializerOptions);
+            throw new VkIDApiException(errorResponse?.Error ?? "Public user info error response could not be parsed.", errorResponse?.ErrorDescription, (int)response.StatusCode);
+        }
+
+        var result = JsonSerializer.Deserialize<VkUserResponseWrapper<VkUserInfoResponse>>(stringResponse, _serializerOptions);
         if (result == null)
-            throw new VkIDApiException("Public user info response could not be parsed.");
+            throw new VkIDApiException("Public user info response could not be parsed.", responseCode: (int)response.StatusCode);
 
         return result.User;
     }
 
 
-    private HttpClient GetHttpClient() => _httpClientFactory?.CreateClient(ServiceRegistrationExtensions.HTTP_CLIENT_NAME) ?? _httpClient!;
-
-
+    /// <summary>
+    /// Releases the unmanaged resources and disposes of the managed resources
+    /// </summary>
     public void Dispose()
     {
-        _httpClient?.Dispose();
+        _httpClient.Dispose();
     }
 }

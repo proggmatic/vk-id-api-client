@@ -3,7 +3,7 @@
 
 namespace Proggmatic.VkIDApiClient.DTO;
 
-public class UserInfoResponse
+public class VkUserInfoResponse
 {
     /// <summary>
     /// ID пользователя
@@ -33,12 +33,13 @@ public class UserInfoResponse
     /// Пол
     /// </summary>
     [JsonPropertyName("sex")]
-    public SexType Sex { get; set; } = SexType.Unknown;
+    public VkSexType Sex { get; set; } = VkSexType.Unknown;
 
     /// <summary>
     /// День рождения
     /// </summary>
     [JsonPropertyName("birthday")]
+    [JsonConverter(typeof(DateOnlySafeJsonConverter))]
     public DateOnly? Birthday { get; set; }
 
     /// <summary>
@@ -59,4 +60,14 @@ public class UserInfoResponse
     /// </summary>
     [JsonPropertyName("verified")]
     public bool? Verified { get; set; }
+
+
+    /// <summary>
+    /// Modify Phone property by adding '+' if absent 
+    /// </summary>
+    public void NormalizePhone()
+    {
+        if (!string.IsNullOrWhiteSpace(this.Phone) && !this.Phone.StartsWith('+'))
+            this.Phone = "+" + this.Phone;
+    }
 }

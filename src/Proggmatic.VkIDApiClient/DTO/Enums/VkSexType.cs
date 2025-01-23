@@ -1,6 +1,6 @@
 namespace Proggmatic.VkIDApiClient.DTO;
 
-public enum SexType : byte
+public enum VkSexType : byte
 {
     /// <summary>
     /// Не указан

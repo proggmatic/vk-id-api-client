@@ -3,7 +3,7 @@
 
 namespace Proggmatic.VkIDApiClient.DTO;
 
-public record UserResponseWrapper<TResponse>
+public record VkUserResponseWrapper<TResponse>
 {
     /// <summary>
     /// User object

@@ -52,7 +52,7 @@ public static class ServiceRegistrationExtensions
                 p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600))
             );
 
-        services.AddScoped<VkIDApiClient>();
+        services.AddTransient<VkIDApiClient>();
 
         return services;
     }

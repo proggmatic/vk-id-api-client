@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Proggmatic.VkIDApiClient.DTO;
 
-public class ExchangeCodeResponse
+public class VkExchangeCodeResponse
 {
     /// <summary>
     /// Токен, который используется для обмена на новую пару Access token + Refresh token. Передается в теле запроса
