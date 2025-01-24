@@ -8,10 +8,16 @@ using Polly;
 
 namespace Proggmatic.VkIDApiClient;
 
+/// <summary>
+/// Service registration extensions
+/// </summary>
 public static class ServiceRegistrationExtensions
 {
     internal const string HTTP_CLIENT_NAME = "VkIDHttpClient";
 
+    /// <summary>
+    /// Add VK ID API client as transient service with inline configuration
+    /// </summary>
     public static IServiceCollection AddVkIDApiClient(this IServiceCollection services, VkIDApiClientConfig config)
     {
         services.Configure<VkIDApiClientConfig>(configure => { configure.ApplicationId = config.ApplicationId; });
@@ -34,6 +40,9 @@ public static class ServiceRegistrationExtensions
         return services;
     }
 
+    /// <summary>
+    /// Add VK ID API client as transient service with configuration from <see cref="IConfiguration"/> object
+    /// </summary>
     public static IServiceCollection AddVkIDApiClient(this IServiceCollection services, IConfiguration? configuration = null, string configurationSection = "vkidApi")
     {
         if (configuration != null && !string.IsNullOrEmpty(configurationSection))

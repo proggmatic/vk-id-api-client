@@ -3,6 +3,9 @@
 
 namespace Proggmatic.VkIDApiClient.DTO;
 
+/// <summary>
+/// Ответ метода получения информации о пользователе
+/// </summary>
 public class VkUserInfoResponse
 {
     /// <summary>
@@ -63,7 +66,7 @@ public class VkUserInfoResponse
 
 
     /// <summary>
-    /// Modify Phone property by adding '+' if absent 
+    /// Modify Phone property by adding '+' if absent
     /// </summary>
     public void NormalizePhone()
     {

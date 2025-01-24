@@ -9,17 +9,18 @@ using Proggmatic.VkIDApiClient.DTO;
 
 namespace Proggmatic.VkIDApiClient;
 
+/// <summary>
+/// VK ID API client
+/// </summary>
 public class VkIDApiClient : IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly IOptionsSnapshot<VkIDApiClientConfig> _options;
-    private static readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions _serializerOptions = new(JsonSerializerDefaults.Web);
 
     /// <summary>
     /// Constructor for dependency injection
     /// </summary>
-    /// <param name="httpClient"></param>
-    /// <param name="options"></param>
     [ActivatorUtilitiesConstructor]
     public VkIDApiClient(HttpClient httpClient, IOptionsSnapshot<VkIDApiClientConfig> options)
     {
@@ -27,6 +28,11 @@ public class VkIDApiClient : IDisposable
         _options = options;
     }
 
+    /// <summary>
+    /// Constructor for creating with inline config
+    /// </summary>
+    /// <param name="httpClient"></param>
+    /// <param name="config"></param>
     public VkIDApiClient(HttpClient httpClient, VkIDApiClientConfig config)
     {
         _httpClient = httpClient;
@@ -120,8 +126,8 @@ public class VkIDApiClient : IDisposable
     /// <summary>
     /// Exchange authentication code to access tokens
     /// </summary>
-    /// <param name="idToken">JSON Web Token (JWT) пользователя, который был получен после первичной авторизации вместе с Access и Refresh token</param>
-    /// <param name="cancellationToken">Токен отмены запроса</param>
+    /// <param name="idToken">JSON Web Token (JWT) of the user, that was got after primary authorization altogether with Access and Refresh token</param>
+    /// <param name="cancellationToken">Token for request cancellation</param>
     /// <exception cref="HttpRequestException">If status code is not success</exception>
     /// <exception cref="VkIDApiException">In case of error response</exception>
     public async Task<VkUserInfoResponse> GetPublicInfo(string idToken, CancellationToken cancellationToken = default)

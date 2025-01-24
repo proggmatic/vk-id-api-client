@@ -4,11 +4,11 @@ param (
 $ErrorActionPreference = "Stop"
 
 Write-Host -------------------------------------------------------------------------------
-Write-Host PACKING ViteServerMiddleware...
+Write-Host PACKING VK ID api client...
 Write-Host -------------------------------------------------------------------------------
 
 
-& dotnet pack ./src/Proggmatic.SpaServices.Vite/Proggmatic.SpaServices.Vite.csproj --output ./_builds
+& dotnet pack ./src/Proggmatic.VkIDApiClient/Proggmatic.VkIDApiClient.csproj --output ./_builds
 
 
 if (-not $noPause) {

@@ -3,16 +3,19 @@
 
 namespace Proggmatic.VkIDApiClient.DTO;
 
+/// <summary>
+/// Response with error from VK
+/// </summary>
 public class VkErrorResponse
 {
     /// <summary>
-    /// Ошибка с одним из значений
+    /// Error title
     /// </summary>
     [JsonPropertyName("error")]
     public string Error { get; set; } = null!;
 
     /// <summary>
-    /// Описание ошибки
+    /// Error description
     /// </summary>
     [JsonPropertyName("error_description")]
     public string? ErrorDescription { get; set; }

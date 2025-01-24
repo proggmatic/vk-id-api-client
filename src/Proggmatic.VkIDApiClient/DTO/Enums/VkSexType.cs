@@ -1,19 +1,22 @@
 namespace Proggmatic.VkIDApiClient.DTO;
 
+/// <summary>
+/// Sex
+/// </summary>
 public enum VkSexType : byte
 {
     /// <summary>
-    /// Не указан
+    /// Not set
     /// </summary>
     Unknown = 0,
 
     /// <summary>
-    /// Женский
+    /// Female
     /// </summary>
     Female = 1,
 
     /// <summary>
-    /// Мужской
+    /// Male
     /// </summary>
     Male = 2
 }

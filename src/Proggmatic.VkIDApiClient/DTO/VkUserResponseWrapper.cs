@@ -3,6 +3,10 @@
 
 namespace Proggmatic.VkIDApiClient.DTO;
 
+/// <summary>
+/// Response wrapper over "user"
+/// </summary>
+/// <typeparam name="TResponse"></typeparam>
 public record VkUserResponseWrapper<TResponse>
 {
     /// <summary>

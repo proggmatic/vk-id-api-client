@@ -1,5 +1,8 @@
 ﻿namespace Proggmatic.VkIDApiClient;
 
+/// <summary>
+/// Configuration API client
+/// </summary>
 public class VkIDApiClientConfig
 {
     /// <summary>
@@ -10,5 +13,5 @@ public class VkIDApiClientConfig
     /// <summary>
     /// Valid redirect URL. You can set it up on https://id.vk.com/about/business/go/accounts/{your user ID}/apps/{your app ID}/edit
     /// </summary>
-    public string RedirectUrl { get; set; }
+    public string RedirectUrl { get; set; } = null!;
 }

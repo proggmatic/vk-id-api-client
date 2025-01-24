@@ -3,6 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Proggmatic.VkIDApiClient.DTO;
 
+/// <summary>
+/// Ответ метода обмена кода на токен
+/// </summary>
 public class VkExchangeCodeResponse
 {
     /// <summary>
