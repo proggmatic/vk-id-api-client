@@ -13,14 +13,19 @@ namespace Proggmatic.VkIDApiClient;
 /// </summary>
 public static class ServiceRegistrationExtensions
 {
-    internal const string HTTP_CLIENT_NAME = "VkIDHttpClient";
+    internal const string HTTP_CLIENT_NAME = "VkIDApiHttpClient";
 
     /// <summary>
     /// Add VK ID API client as transient service with inline configuration
     /// </summary>
-    public static IServiceCollection AddVkIDApiClient(this IServiceCollection services, VkIDApiClientConfig config)
+    public static IServiceCollection AddVkIDApi(this IServiceCollection services, VkIDApiConfig config)
     {
-        services.Configure<VkIDApiClientConfig>(configure => { configure.ApplicationId = config.ApplicationId; });
+        services.Configure<VkIDApiConfig>(configure =>
+        {
+            configure.Web = config.Web;
+            configure.Android = config.Android;
+            configure.Ios = config.Ios;
+        });
 
         services.AddHttpClient<VkIDApiClient>(HTTP_CLIENT_NAME, (_, client) =>
             {
@@ -43,12 +48,12 @@ public static class ServiceRegistrationExtensions
     /// <summary>
     /// Add VK ID API client as transient service with configuration from <see cref="IConfiguration"/> object
     /// </summary>
-    public static IServiceCollection AddVkIDApiClient(this IServiceCollection services, IConfiguration? configuration = null, string configurationSection = "vkidApi")
+    public static IServiceCollection AddVkIDApi(this IServiceCollection services, IConfiguration? configuration = null, string configurationSection = "vkidApi")
     {
         if (configuration != null && !string.IsNullOrEmpty(configurationSection))
-            services.Configure<VkIDApiClientConfig>(configuration.GetSection(configurationSection));
+            services.Configure<VkIDApiConfig>(configuration.GetSection(configurationSection));
 
-        services.AddHttpClient<VkIDApiClient>(HTTP_CLIENT_NAME, (_, client) =>
+        services.AddHttpClient<VkIDApiClientFactory>(HTTP_CLIENT_NAME, (_, client) =>
             {
                 client.Timeout = TimeSpan.FromSeconds(30);
                 client.DefaultRequestHeaders.Clear();
@@ -61,7 +66,7 @@ public static class ServiceRegistrationExtensions
                 p.WaitAndRetryAsync(3, _ => TimeSpan.FromMilliseconds(600))
             );
 
-        services.AddTransient<VkIDApiClient>();
+        services.AddTransient<VkIDApiClientFactory>();
 
         return services;
     }

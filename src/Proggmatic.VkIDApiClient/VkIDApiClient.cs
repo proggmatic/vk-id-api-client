@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 using Proggmatic.VkIDApiClient.DTO;
@@ -17,16 +16,6 @@ public class VkIDApiClient : IDisposable
     private readonly HttpClient _httpClient;
     private readonly IOptionsSnapshot<VkIDApiClientConfig> _options;
     private static readonly JsonSerializerOptions _serializerOptions = new(JsonSerializerDefaults.Web);
-
-    /// <summary>
-    /// Constructor for dependency injection
-    /// </summary>
-    [ActivatorUtilitiesConstructor]
-    public VkIDApiClient(HttpClient httpClient, IOptionsSnapshot<VkIDApiClientConfig> options)
-    {
-        _httpClient = httpClient;
-        _options = options;
-    }
 
     /// <summary>
     /// Constructor for creating with inline config

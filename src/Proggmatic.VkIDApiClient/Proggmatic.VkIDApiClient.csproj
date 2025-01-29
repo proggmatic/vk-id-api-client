@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <Version>9.0.0</Version>
+    <Version>9.0.1</Version>
 
     <Title>VK ID api client</Title>
     <Description>VK ID api client (https://id.vk.com/about/business/go/docs/ru/vkid)</Description>

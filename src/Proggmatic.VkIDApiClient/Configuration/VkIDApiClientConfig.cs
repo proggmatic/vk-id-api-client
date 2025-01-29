@@ -1,7 +1,7 @@
 ﻿namespace Proggmatic.VkIDApiClient;
 
 /// <summary>
-/// Configuration API client
+/// Configuration for API client
 /// </summary>
 public class VkIDApiClientConfig
 {
