@@ -4,12 +4,12 @@ using System.Text.Json.Serialization;
 namespace Proggmatic.VkIDApiClient.DTO;
 
 /// <summary>
-/// Ответ метода обмена кода на токен
+/// Refresh token response
 /// </summary>
-public class VkExchangeCodeResponse
+public class VkRefreshTokenResponse
 {
     /// <summary>
-    /// Токен, который используется для обмена на новую пару Access token + Refresh token. Передается в теле запроса
+    /// Токен, который используется для обмена на новую пару Access token + Refresh token
     /// </summary>
     [JsonPropertyName("refresh_token")]
     public string RefreshToken { get; set; } = null!;
@@ -19,12 +19,6 @@ public class VkExchangeCodeResponse
     /// </summary>
     [JsonPropertyName("access_token")]
     public string AccessToken { get; set; } = null!;
-
-    /// <summary>
-    /// JSON Web Token (JWT) пользователя, который был получен после первичной авторизации вместе с Access и Refresh token
-    /// </summary>
-    [JsonPropertyName("id_token")]
-    public string IdToken { get; set; } = null!;
 
     /// <summary>
     /// Тип токена — по умолчанию Bearer

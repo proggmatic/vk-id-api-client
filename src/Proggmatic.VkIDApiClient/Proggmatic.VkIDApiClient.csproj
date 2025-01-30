@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 
-    <Version>9.0.1</Version>
+    <Version>9.0.2</Version>
 
     <Title>VK ID api client</Title>
     <Description>VK ID api client (https://id.vk.com/about/business/go/docs/ru/vkid)</Description>
@@ -23,9 +23,9 @@
     <PackageReadmeUrl>https://raw.githubusercontent.com/proggmatic/vk-id-api-client/master/README.md</PackageReadmeUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
-    <PackageTags>VK ID api client VKontakte ВКонтакте ВК OAuth</PackageTags>
+    <PackageTags>VK ID VkID api client VKontakte ВКонтакте ВК OAuth</PackageTags>
     <PackageReleaseNotes>
-      Updated to .NET 9.0.0
+      Renamed methods to get access token. Add methods for revoke and logout.
     </PackageReleaseNotes>
 
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
