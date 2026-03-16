@@ -8,8 +8,8 @@
 
     <Version>10.0.0</Version>
 
-    <Title>VK ID api client</Title>
-    <Description>VK ID api client (https://id.vk.com/about/business/go/docs/ru/vkid)</Description>
+    <Title>VK ID API client</Title>
+    <Description>VK ID API client (https://id.vk.com/about/business/go/docs/ru/vkid)</Description>
     <Authors>Proggmatic</Authors>
 
     <PackageId>Proggmatic.VkIDApiClient</PackageId>
@@ -23,7 +23,7 @@
     <PackageReadmeUrl>https://raw.githubusercontent.com/proggmatic/vk-id-api-client/master/README.md</PackageReadmeUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
-    <PackageTags>VK ID VkID api client VKontakte ВКонтакте ВК OAuth</PackageTags>
+    <PackageTags>VK ID VkID API client VKontakte ВКонтакте ВК OAuth</PackageTags>
     <PackageReleaseNotes>
       Renamed methods to get access token. Add methods for revoke and logout.
     </PackageReleaseNotes>
